@@ -10,9 +10,10 @@ vec3 color(const ray& r, hitable *world)
 {
 	hit_record rec;
 
-	if (world->hit(r, 0.0, FLT_MAX, rec))
+	if (world->hit(r, 0.001, FLT_MAX, rec))
 	{
-		return 0.5 * vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+		vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+		return 0.5 * color(ray(rec.p, target - rec.p), world);
 	}
 	else
 	{
@@ -22,18 +23,10 @@ vec3 color(const ray& r, hitable *world)
 	}
 }
 
-double random_number()
-{
-	return ((double)rand() / (double)RAND_MAX);
-}
-
 
 
 int main()
 {
-	std::cout << random_number() << std::endl;
-	std::cout << random_number() << std::endl;
-	std::cout << random_number() << std::endl;
 	srand((unsigned)time(NULL));
 	int nx = 800;
 	int ny = 400;
@@ -67,6 +60,7 @@ int main()
 				col += color(r, world);
 			}
 			col /= double(ns);
+			col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
