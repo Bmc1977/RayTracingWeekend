@@ -4,6 +4,7 @@
 #include "Ray.h"
 #include "Sphere.h"
 #include "Hitablelist.h"
+#include "Camera.h"
 #include <float.h>
 
 vec3 color(const ray& r, hitable *world)
@@ -22,22 +23,27 @@ vec3 color(const ray& r, hitable *world)
 	}
 }
 
+double random_number()
+{
+	return ((double)rand() / (double)RAND_MAX);
+}
+
 
 
 int main()
 {
+	std::cout << random_number() << std::endl;
+	std::cout << random_number() << std::endl;
+	std::cout << random_number() << std::endl;
+	srand((unsigned)time(NULL));
 	int nx = 800;
 	int ny = 400;
+	int ns = 400;
 
 	std::ofstream file;
 	file.open("image.ppm");
 
 	file << "P3\n" << nx << " " << ny << "\n255\n";
-
-	vec3 lower_left_corner(-2.0, -1.0, -1.0);
-	vec3 horizontal(4.0, 0.0, 0.0);
-	vec3 vertical(0.0, 2.0, 0.0);
-	vec3 origin(0.0, 0.0, 0.0);
 
 	hitable* list[2];
 
@@ -45,17 +51,23 @@ int main()
 	list[1] = new sphere(vec3(0, -100.5, -1), 100);
 	hitable* world = new hitable_list(list, 2);
 
+	camera cam;
+
 	for (int j = ny - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < nx; i++)
 		{
-			double u = double(i) / double(nx);
-			double v = double(j) / double(ny);
+			vec3 col(0, 0, 0);
+			for (int s = 0; s < ns; s++)
+			{
+				double u = double(i + random_number()) / double(nx);
+				double v = double(j + random_number()) / double(ny);
 
-			ray r(origin, lower_left_corner + u * horizontal + v * vertical);
-			
-			vec3 p = r.point_at_parameter(2.0);
-			vec3 col = color(r, world);
+				ray r = cam.get_ray(u , v);
+				vec3 p = r.point_at_parameter(2.0);
+				col += color(r, world);
+			}
+			col /= double(ns);
 
 			int ir = int(255.99 * col[0]);
 			int ig = int(255.99 * col[1]);
