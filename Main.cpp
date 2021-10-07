@@ -1,5 +1,4 @@
 #include <fstream>
-
 #include "Vec3.h"
 #include "Ray.h"
 #include "Sphere.h"

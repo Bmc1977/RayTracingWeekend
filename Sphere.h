@@ -15,6 +15,12 @@ public:
 	double radius;
 };
 
+
+/*
+ * Whether or not a ray will hit a circle can be represented by a quadriatic equation.
+ * Roots: 0 -> Doesn't hit 1 -> Hits the very edge 2 -> Hits within the circle (and theoretically the back).
+ * Uses the quadriatic formula.
+ */
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
 {
 	vec3 oc = r.origin() - center;
